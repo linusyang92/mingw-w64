@@ -53,7 +53,13 @@ pthread_spin_lock (pthread_spinlock_t *lock)
   volatile spinlock_word_t *lk = (volatile spinlock_word_t *)lock;
   while (unlikely(__sync_lock_test_and_set(lk, 0) == 0))
     do {
+#if defined(_M_X64) || defined(_M_IX86) || defined(__i386__) || defined(__amd64__)
       asm("pause" ::: "memory");
+#elif defined(_M_ARM64) || defined(__aarch64__)
+      asm("yield" ::: "memory");
+#else
+      asm("" ::: "memory");
+#endif
     } while (*lk == 0);
   return 0;
 }

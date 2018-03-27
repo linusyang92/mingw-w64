@@ -1235,10 +1235,12 @@ pthread_cancel (pthread_t t)
       if (WaitForSingleObject (tv->h, 0) == WAIT_TIMEOUT)
 	{
 	  GetThreadContext(tv->h, &ctxt);
-#ifdef _M_X64
+#if defined(_M_X64) || defined(__amd64__)
 	  ctxt.Rip = (uintptr_t) _pthread_invoke_cancel;
-#else
+#elif defined(_M_IX86) || defined(__i386__)
 	  ctxt.Eip = (uintptr_t) _pthread_invoke_cancel;
+#else
+	  ctxt.Pc = (uintptr_t) _pthread_invoke_cancel;
 #endif
 	  SetThreadContext (tv->h, &ctxt);
 

@@ -1,4 +1,6 @@
-/* Implementation for gcc's internal stack-allocation routines.  */
+/* Implementation for gcc's internal stack-allocation routines (Intel only).  */
+#if defined(_M_X64) || defined(_M_IX86) || defined(__i386__) || defined(__amd64__)
+
 .global ___chkstk
 .global	__alloca
 
@@ -85,4 +87,6 @@ chkstk_end:
 	movl	(%eax), %ecx
 	pushl	4(%eax)
 	ret
+#endif
+
 #endif
